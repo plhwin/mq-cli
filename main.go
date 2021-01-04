@@ -28,7 +28,7 @@ func main() {
 					&cli.StringFlag{Name: "secretKey", Aliases: []string{"s"}, Usage: "credential of secretKey, if needed"},
 					&cli.BoolFlag{Name: "consumeOrder", Aliases: []string{"o"}, DefaultText: "false", Value: false, Usage: "consume orderly message"},
 					&cli.BoolFlag{Name: "consumeLog", Aliases: []string{"l"}, DefaultText: "true", Value: true, Usage: "print log when consume message"},
-					&cli.Int64Flag{Name: "consumeCountDelay", Aliases: []string{"d"}, DefaultText: "5", Value: 5, Usage: "how many seconds to delay printing consume count"},
+					&cli.Int64Flag{Name: "consumeCountDelay", Aliases: []string{"d"}, DefaultText: "1", Value: 1, Usage: "how many seconds to delay printing consume count"},
 				},
 				Action: action.Consume,
 			},
