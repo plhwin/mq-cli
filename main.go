@@ -27,6 +27,7 @@ func main() {
 					&cli.StringFlag{Name: "accessKey", Aliases: []string{"a"}, Usage: "credential of accessKey, if needed"},
 					&cli.StringFlag{Name: "secretKey", Aliases: []string{"s"}, Usage: "credential of secretKey, if needed"},
 					&cli.BoolFlag{Name: "consumeOrder", Aliases: []string{"o"}, DefaultText: "false", Value: false, Usage: "consume orderly message"},
+					&cli.BoolFlag{Name: "consumeLog", Aliases: []string{"l"}, DefaultText: "true", Value: true, Usage: "print log when consume message"},
 				},
 				Action: action.Consume,
 			},

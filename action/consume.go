@@ -15,6 +15,7 @@ func Consume(c *cli.Context) (err error) {
 	accessKey := c.String("accessKey")
 	secretKey := c.String("secretKey")
 	consumeOrder := c.Bool("consumeOrder")
+	consumeLog := c.Bool("consumeLog")
 
 	var consumerModel consumer.MessageModel
 	switch c.String("consumerModel") {
@@ -39,7 +40,7 @@ func Consume(c *cli.Context) (err error) {
 		return
 	}
 
-	log.Println(nameSrvAddr, consumerGroup, topic, accessKey, secretKey, consumerModel, consumeFromWhere, consumeOrder)
-	mq.Subscribe(topic)
+	log.Println(nameSrvAddr, consumerGroup, topic, accessKey, secretKey, consumerModel, consumeFromWhere, consumeOrder, consumeLog)
+	mq.Subscribe(topic, consumeLog)
 	return
 }

@@ -40,7 +40,7 @@ func NewPushConsumer(nameSrvAddr, consumerGroup, accessKey, secretKey string, co
 	return
 }
 
-func Subscribe(topic string) {
+func Subscribe(topic string, consumeLog bool) {
 	log.Println("subscribe message from rocketmq start...")
 	ch := make(chan struct{})
 	err := PushConsumer.Subscribe(topic, consumer.MessageSelector{}, func(ctx context.Context,
@@ -49,7 +49,9 @@ func Subscribe(topic string) {
 			// 毫秒
 			timeNow := time.Now().UnixNano() / int64(time.Millisecond)
 			timeDiff := timeNow - msg.BornTimestamp
-			log.Println(msg, timeNow, msg.BornTimestamp, timeDiff)
+			if consumeLog {
+				log.Println(msg, timeNow, msg.BornTimestamp, timeDiff)
+			}
 		}
 		return consumer.ConsumeSuccess, nil
 	})
