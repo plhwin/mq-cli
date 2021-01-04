@@ -1,3 +1,4 @@
 conf/conf_*
 config/config.*
 mq-cli
+mq-cli-*
