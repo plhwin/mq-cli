@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/apache/rocketmq-client-go/v2"
@@ -16,6 +17,7 @@ import (
 
 var PushConsumer rocketmq.PushConsumer
 var Producer rocketmq.Producer
+var consumeCount int64
 
 // https://github.com/apache/rocketmq-client-go/blob/master/examples/consumer/orderly/main.go
 func NewPushConsumer(nameSrvAddr, consumerGroup, accessKey, secretKey string, consumerModel consumer.MessageModel, consumeFromWhere consumer.ConsumeFromWhere, consumeOrder bool) (err error) {
@@ -40,12 +42,21 @@ func NewPushConsumer(nameSrvAddr, consumerGroup, accessKey, secretKey string, co
 	return
 }
 
-func Subscribe(topic string, consumeLog bool) {
+func printConsumeCount(consumeCountDelay int64) {
+	ticker := time.NewTicker(time.Duration(consumeCountDelay) * time.Second)
+	for t := range ticker.C {
+		log.Println("consumeCount:", consumeCount, t)
+	}
+}
+
+func Subscribe(topic string, consumeLog bool, consumeCountDelay int64) {
 	log.Println("subscribe message from rocketmq start...")
+	go printConsumeCount(consumeCountDelay)
 	ch := make(chan struct{})
 	err := PushConsumer.Subscribe(topic, consumer.MessageSelector{}, func(ctx context.Context,
 		msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
 		for _, msg := range msgs {
+			atomic.AddInt64(&consumeCount, 1)
 			// 毫秒
 			timeNow := time.Now().UnixNano() / int64(time.Millisecond)
 			timeDiff := timeNow - msg.BornTimestamp
