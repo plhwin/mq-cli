@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"plhwin/mq-cli/db"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -49,8 +50,12 @@ func printConsumeCount(consumeCountDelay int64) {
 	}
 }
 
-func Subscribe(topic string, consumeLog bool, consumeCountDelay int64) {
+func Subscribe(topic string, consumeLog bool, consumeCountDelay int64, redisAddr, redisPassword, redisChannel string) {
 	log.Println("subscribe message from rocketmq start...")
+	redisPub := redisAddr != "" && redisPassword != "" && redisChannel != ""
+	if redisPub {
+		db.InitRedis(redisAddr, redisPassword)
+	}
 	go printConsumeCount(consumeCountDelay)
 	ch := make(chan struct{})
 	err := PushConsumer.Subscribe(topic, consumer.MessageSelector{}, func(ctx context.Context,
@@ -62,6 +67,10 @@ func Subscribe(topic string, consumeLog bool, consumeCountDelay int64) {
 			timeDiff := timeNow - msg.BornTimestamp
 			if consumeLog {
 				log.Println(msg, timeNow, msg.BornTimestamp, timeDiff)
+			}
+
+			if redisPub {
+				db.RedisCli.Publish(db.Ctx, redisChannel, msg.Body)
 			}
 		}
 		return consumer.ConsumeSuccess, nil

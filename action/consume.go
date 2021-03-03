@@ -18,6 +18,10 @@ func Consume(c *cli.Context) (err error) {
 	consumeLog := c.Bool("consumeLog")
 	consumeCountDelay := c.Int64("consumeCountDelay")
 
+	redisAddr := c.String("redisAddr")
+	redisPassword := c.String("redisPassword")
+	redisChannel := c.String("redisChannel")
+
 	var consumerModel consumer.MessageModel
 	switch c.String("consumerModel") {
 	case "BroadCasting":
@@ -41,7 +45,7 @@ func Consume(c *cli.Context) (err error) {
 		return
 	}
 
-	log.Println(nameSrvAddr, consumerGroup, topic, accessKey, secretKey, consumerModel, consumeFromWhere, consumeOrder, consumeLog, consumeCountDelay)
-	mq.Subscribe(topic, consumeLog, consumeCountDelay)
+	log.Println(nameSrvAddr, consumerGroup, topic, accessKey, secretKey, consumerModel, consumeFromWhere, consumeOrder, consumeLog, consumeCountDelay, redisAddr, redisPassword, redisChannel)
+	mq.Subscribe(topic, consumeLog, consumeCountDelay, redisAddr, redisPassword, redisChannel)
 	return
 }
